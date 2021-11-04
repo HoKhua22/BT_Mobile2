@@ -3,6 +3,7 @@ package com.example.redditapp.screens
 import androidx.annotation.StringRes
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -64,7 +65,30 @@ val communities = listOf(
 
 @Composable
 fun SubredditsScreen(modifier: Modifier = Modifier) {
-  //TODO add your code here
+  ConstraintLayout(
+    modifier = modifier
+      .fillMaxSize()
+      .background(color = MaterialTheme.colors.surface)
+  ) {
+    val (backgroundImage, icon, name, member, description) = createRefs()
+    SubredditImage(
+      modifier = modifier.constrainAs(backgroundImage){
+        centerHorizontallyTo(parent)
+        top.linkTo(parent.top)
+      }
+    )
+    SubredditIcon(modifier = modifier
+      .constrainAs(icon) {
+        top.linkTo(backgroundImage.bottom)
+        bottom.linkTo(backgroundImage.bottom)
+        centerHorizontallyTo(parent)
+      }
+      .zIndex(1f)
+    )
+
+    SubredditName(
+      nameStringRes = subredditModel.nameStringRes)
+  }
 }
 
 @Composable
@@ -131,12 +155,38 @@ fun SubredditDescription(modifier: Modifier, @StringRes descriptionStringRes: In
 
 @Composable
 fun Community(text: String, modifier: Modifier = Modifier) {
-  //TODO add your code here
+  Row(modifier = modifier
+    .padding(start = 16.dp, top = 16.dp)
+    .fillMaxWidth()
+    .clickable { onCommunityClicked.invoke() }
+  ){
+    Image(
+      bitmap = ImageBitmap.imageResource(id = R.drawable.subreddit_placeholder),
+      contentDescription = stringResource(id = R.string.community_icon),
+      modifier = modifier
+        .size(24.dp)
+        .clip(CircleShape)
+    )
+    Text(
+      fontSize = 10.sp,
+      color = MaterialTheme.colors.primaryVariant,
+      text = text,
+      fontWeight = FontWeight.Bold,
+      modifier = modifier
+    )
+  }
 }
 
 @Composable
 fun Communities(modifier: Modifier = Modifier) {
-  //TODO add your code here
+  mainCommunities.forEach {
+    Community(text = stringResource(it))
+  }
+  Spacer(modifier = modifier.height(4.dp))
+  BackgroundText(stringResource(R.string.communities))
+  communities.forEach {
+    Community(text = stringResource(it))
+  }
 }
 
 @Preview
